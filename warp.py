@@ -37,7 +37,7 @@ os.makedirs("~/warp-confs", exist_ok=True)
 os.chdir(os.path.expanduser("~/warp-confs"))
 
 print("Generating 8 WARP configs...")
-for i in range(1, 9):
+for i in range(1, 6):
     conf_path = f"/etc/wireguard/wgcf{i}.conf"
     if Path(conf_path).exists():
         print(f"  Config wgcf{i}.conf already exists, skipping.")
@@ -71,7 +71,7 @@ for i in range(1, 9):
 
 print("Setting up Dante SOCKS proxies...")
 os.makedirs("/etc/danted-multi", exist_ok=True)
-for i in range(1, 9):
+for i in range(1, 6):
     port = 1080 + i
     ip = f"172.16.0.{i+1}"
     conf_file = f"/etc/danted-multi/danted-warp{i}.conf"
@@ -115,7 +115,7 @@ while not all_unique:
     proxy_ips = {}
     all_unique = True
     print("Checking IPs:")
-    for i in range(1, 9):
+    for i in range(1, 6):
         # Restart corresponding Dante proxy first
         os.system(f"sudo systemctl restart danted-warp{i}")
         # Restart WireGuard interface
@@ -138,13 +138,13 @@ while not all_unique:
         choice = input("Some IPs are not unique. Do you want to try again? (y/n): ").strip().lower()
         if choice != 'y':
             print("Returning only proxies with unique IPs:")
-            for i in range(1, 9):
+            for i in range(1, 6):
                 ip = proxy_ips[i]
                 if ip_map[ip] == 1 and ip != "error":
                     print(f"  wgcf{i} → SOCKS5: 127.0.0.1:{1080 + i}  (IP: {ip})")
             break
         print("Restarting WireGuard and Dante services...")
-        for i in range(1, 9):
+        for i in range(1, 6):
             os.system(f"sudo wg-quick down wgcf{i} 2>/dev/null || sudo ip link delete wgcf{i} 2>/dev/null")
             os.system(f"sudo systemctl restart danted-warp{i}")
         print("Waiting 30 seconds before retry...")
@@ -152,5 +152,5 @@ while not all_unique:
         os.system("sudo modprobe -r wireguard || true")
 
 print("\nSOCKS5 proxies (with unique public IPs):")
-for i in range(1, 9):
+for i in range(1, 6):
     print(f"  wgcf{i} → 127.0.0.1:{1080 + i}")
