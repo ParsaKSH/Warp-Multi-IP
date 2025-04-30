@@ -9,6 +9,7 @@ print("Created by Parsa in OPIran club https://t.me/OPIranClub")
 print("Love Iran :)")
 print("=" * 42)
 
+os.system(f"sudo mkdir /root/warp-confs 2>/dev/null")
 # Ask user if they want to clean everything first
 cleanup = input("Do you want to remove all existing configs and proxies? (y/n): ").strip().lower()
 if cleanup == 'y':
